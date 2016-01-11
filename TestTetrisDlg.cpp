@@ -73,10 +73,14 @@ BEGIN_MESSAGE_MAP(CTestTetrisDlg, CDialog)
 	ON_COMMAND(ID_MENU_HELP, &CTestTetrisDlg::OnMenuHelp)
 	ON_COMMAND(ID_MENU_ABOUT, &CTestTetrisDlg::OnMenuAbout)
 	ON_CBN_SELCHANGE(IDC_COMBO_SPEED, &CTestTetrisDlg::OnCbnSelchangeComboSpeed)
+	ON_WM_SIZE()
+	ON_WM_TIMER()
+	ON_WM_GETMINMAXINFO()
 END_MESSAGE_MAP()
 
 
 // CTestTetrisDlg 消息处理程序
+
 
 BOOL CTestTetrisDlg::OnInitDialog()
 {
@@ -119,6 +123,8 @@ BOOL CTestTetrisDlg::OnInitDialog()
 
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
+
+	SetTimer(987,200,NULL);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -275,4 +281,132 @@ void CTestTetrisDlg::OnUpdateBlockCount( int nBlockCount )
 void CTestTetrisDlg::OnOK()
 {
 
+}
+
+void CTestTetrisDlg::OnCancel()
+{
+	__super::OnCancel();
+}
+
+void CTestTetrisDlg::OnSize(UINT nType, int cx, int cy)
+{
+	__super::OnSize(nType, cx, cy);
+	
+	if (m_StaticMatrixBlock.GetSafeHwnd() == NULL)
+		return;
+
+	
+	CRect rcBlock;
+	m_StaticMatrixBlock.GetWindowRect(&rcBlock);
+	ScreenToClient(&rcBlock);
+	int LEFT = cx - rcBlock.Width() - 10;
+	m_StaticMatrixBlock.MoveWindow(
+		LEFT,
+		10,
+		rcBlock.Width(),
+		rcBlock.Height());
+	m_StaticMatrixBlock.Invalidate(TRUE);
+
+	//--
+	CRect rcVelocity;
+	GetDlgItem(IDC_STATIC_VELOCITY)->GetWindowRect(&rcVelocity);
+	ScreenToClient(&rcVelocity);
+	GetDlgItem(IDC_STATIC_VELOCITY)->MoveWindow(
+		LEFT,
+		rcBlock.bottom + 10,
+		rcVelocity.Width(),
+		rcVelocity.Height());
+	GetDlgItem(IDC_STATIC_VELOCITY)->Invalidate(TRUE);
+
+	CRect rcSpeed;
+	GetDlgItem(IDC_COMBO_SPEED)->GetWindowRect(&rcSpeed);
+	ScreenToClient(&rcSpeed);
+	GetDlgItem(IDC_COMBO_SPEED)->MoveWindow(
+		rcVelocity.right + 4,
+		rcVelocity.top - 4,
+		rcSpeed.Width(),
+		rcSpeed.Height());
+	GetDlgItem(IDC_COMBO_SPEED)->Invalidate(TRUE);
+
+	//---
+	CRect rcCount;
+	GetDlgItem(IDC_STATIC_COUNT)->GetWindowRect(&rcCount);
+	ScreenToClient(&rcCount);
+	GetDlgItem(IDC_STATIC_COUNT)->MoveWindow(
+		LEFT,
+		rcSpeed.bottom + 10,
+		rcCount.Width(),
+		rcCount.Height());
+	GetDlgItem(IDC_STATIC_COUNT)->Invalidate(TRUE);
+
+	CRect rcBlockCount;
+	GetDlgItem(IDC_EDIT_BLOCKCOUNT)->GetWindowRect(&rcBlockCount);
+	ScreenToClient(&rcBlockCount);
+	GetDlgItem(IDC_EDIT_BLOCKCOUNT)->MoveWindow(
+		rcCount.right + 4,
+		rcCount.top - 4,
+		rcBlockCount.Width(),
+		rcBlockCount.Height());
+	GetDlgItem(IDC_EDIT_BLOCKCOUNT)->Invalidate(TRUE);
+
+	//--
+	CRect rcScore;
+	GetDlgItem(IDC_STATIC_SCORE)->GetWindowRect(&rcScore);
+	ScreenToClient(&rcScore);
+	GetDlgItem(IDC_STATIC_SCORE)->MoveWindow(
+		LEFT,
+		rcCount.bottom + 10,
+		rcScore.Width(),
+		rcScore.Height());
+	GetDlgItem(IDC_STATIC_SCORE)->Invalidate(TRUE);
+
+	CRect rcEditScore;
+	GetDlgItem(IDC_EDIT_SCORE)->GetWindowRect(&rcEditScore);
+	ScreenToClient(&rcEditScore);
+	GetDlgItem(IDC_EDIT_SCORE)->MoveWindow(
+		rcScore.right + 4,
+		rcScore.top - 2,
+		rcEditScore.Width(),
+		rcEditScore.Height());
+	GetDlgItem(IDC_EDIT_SCORE)->Invalidate(TRUE);
+	
+	// ---
+	CRect rcBoard;
+	m_StaticMatrixBoard.GetWindowRect(&rcBoard);
+	ScreenToClient(&rcBoard);
+	m_StaticMatrixBoard.MoveWindow(
+		10,
+		10,
+		cx - rcBlock.Width() - 30,
+		cy - 20);
+	m_StaticMatrixBoard.Invalidate(TRUE);
+
+}
+
+void CTestTetrisDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	if (nIDEvent == 987)
+	{
+		KillTimer(nIDEvent);
+
+		//CRect rc;
+		//GetWindowRect(&rc);
+		//MoveWindow(rc.left, rc.top, 433, 642);
+	}
+	__super::OnTimer(nIDEvent);
+}
+
+void CTestTetrisDlg::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
+{
+	if (lpMMI->ptMinTrackSize.x <= 312)
+	{
+		lpMMI->ptMinTrackSize.x = 312;
+	}
+
+	  if (lpMMI->ptMinTrackSize.y <= 456)
+	  {
+		  lpMMI->ptMinTrackSize.y = 456;
+	  }
+
+	  CDialog::OnGetMinMaxInfo(lpMMI);
 }

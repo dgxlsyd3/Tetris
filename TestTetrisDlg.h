@@ -57,4 +57,10 @@ public:
 	afx_msg void OnCbnSelchangeComboSpeed();
 protected:
 	virtual void OnOK();
+public:
+	afx_msg void OnSize(UINT nType, int cx, int cy);
+	virtual void OnCancel();
+	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	void OnGetMinMaxInfo(MINMAXINFO * lpMMI);
 };
